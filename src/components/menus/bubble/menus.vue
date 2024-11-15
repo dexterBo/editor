@@ -1,19 +1,15 @@
 <template>
-  <template
-    v-if="
-      editor?.isActive('toc') ||
-      editor?.isActive('pagination') ||
-      editor?.isActive('horizontalRule') ||
-      editor?.getAttributes('image').error
-    "
-  >
+  <template v-if="
+    editor?.isActive('toc') ||
+    editor?.isActive('pagination') ||
+    editor?.isActive('horizontalRule') ||
+    editor?.getAttributes('image').error
+  ">
     <!-- <menus-bubble-node-delete /> -->
   </template>
-  <template
-    v-else-if="
-      editor?.isActive('image') && !editor?.getAttributes('image').error
-    "
-  >
+  <template v-else-if="
+    editor?.isActive('image') && !editor?.getAttributes('image').error
+  ">
     <menus-toolbar-base-align-left />
     <menus-toolbar-base-align-center />
     <menus-toolbar-base-align-right />
@@ -23,57 +19,43 @@
     <menus-bubble-image-draggable />
     <menus-bubble-image-reset />
     <div class="umo-bubble-menu-divider"></div>
-    <menus-bubble-image-remove-background
-      v-if="
-        editor?.getAttributes('image')?.type === 'image' ||
-        ['image/png', 'image/jpeg'].includes(
-          editor?.getAttributes('image')?.type,
-        )
-      "
-    />
-    <menus-bubble-image-preview
-      v-if="
-        editor?.getAttributes('image')?.type === 'image' ||
-        ['image/png', 'image/jpeg'].includes(
-          editor?.getAttributes('image')?.type,
-        )
-      "
-    />
+    <menus-bubble-image-remove-background v-if="
+      editor?.getAttributes('image')?.type === 'image' ||
+      ['image/png', 'image/jpeg'].includes(
+        editor?.getAttributes('image')?.type,
+      )
+    " />
+    <menus-bubble-image-preview v-if="
+      editor?.getAttributes('image')?.type === 'image' ||
+      ['image/png', 'image/jpeg'].includes(
+        editor?.getAttributes('image')?.type,
+      )
+    " />
     <menus-bubble-image-open />
     <div class="umo-bubble-menu-divider"></div>
     <menus-bubble-image-edit />
-    <menus-bubble-node-duplicate
-      v-if="
-        editor?.isActive('image') && editor?.getAttributes('image').draggable
-      "
-    />
-    <menus-bubble-node-tofile
-      v-if="editor?.getAttributes('image').previewType !== null"
-    />
+    <menus-bubble-node-duplicate v-if="
+      editor?.isActive('image') && editor?.getAttributes('image').draggable
+    " />
+    <menus-bubble-node-tofile v-if="editor?.getAttributes('image').previewType !== null" />
     <menus-bubble-node-delete />
   </template>
-  <template
-    v-else-if="
-      editor?.isActive('video') ||
-      editor?.isActive('audio') ||
-      editor?.isActive('file') ||
-      editor?.isActive('iframe')
-    "
-  >
+  <template v-else-if="
+    editor?.isActive('video') ||
+    editor?.isActive('audio') ||
+    editor?.isActive('file') ||
+    editor?.isActive('iframe')
+  ">
     <menus-toolbar-base-align-left />
     <menus-toolbar-base-align-center />
     <menus-toolbar-base-align-right />
     <div class="umo-bubble-menu-divider"></div>
-    <menus-bubble-file-download
-      v-if="
-        editor?.isActive('file') ||
-        editor?.isActive('video') ||
-        editor?.isActive('audio')
-      "
-    />
-    <menus-bubble-node-tofile
-      v-if="editor?.isActive('video') || editor?.isActive('audio')"
-    />
+    <menus-bubble-file-download v-if="
+      editor?.isActive('file') ||
+      editor?.isActive('video') ||
+      editor?.isActive('audio')
+    " />
+    <menus-bubble-node-tofile v-if="editor?.isActive('video') || editor?.isActive('audio')" />
     <menus-bubble-node-delete />
   </template>
   <template v-else-if="editor?.isActive('table')">
@@ -125,10 +107,10 @@
       <menus-bubble-text-box-background />
       <div class="umo-bubble-menu-divider"></div>
     </template>
-    <template v-if="options.document?.enableComment">
+    <!-- <template v-if="options.document?.enableComment">
       <menus-bubble-comment />
       <div class="umo-bubble-menu-divider"></div>
-    </template>
+    </template> -->
     <slot name="bubble_menu" />
   </template>
 </template>
@@ -143,6 +125,7 @@ const { options, editor } = useStore()
   border-right: solid 1px var(--umo-border-color-light);
   height: 16px;
   margin: 0 10px 0 5px;
+
   &:last-child:is(.umo-bubble-menu-divider) {
     display: none;
   }

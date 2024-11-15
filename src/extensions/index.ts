@@ -55,11 +55,11 @@ import TextBox from './text-box'
 import Toc from './toc'
 import Video from './video'
 
-const { options, container, tableOfContents } = useStore()
-
-const { dicts, document: doc, file } = options.value
-
-export const extensions = [
+export const extensions = (
+  { dicts, document: doc, file }: any,
+  container: any,
+  tableOfContents: any,
+) => [
   StarterKit.configure({
     document: false,
     bold: false,

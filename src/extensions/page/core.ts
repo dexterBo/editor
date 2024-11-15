@@ -306,16 +306,20 @@ export function computedWidth(html: string, cache = true) {
 }
 
 export function getDefault() {
-  if (map.has('defaultheight')) {
+  const computedspan = iframeDoc.getElementById('computedspan')
+  if (map.has('defaultheight') || !computedspan) {
     return map.get('defaultheight')
   }
-  const computedspan = iframeDoc.getElementById('computedspan')
   const { height: pHeight } = getDomHeight(computedspan)
   map.set('defaultheight', pHeight)
   return pHeight
 }
 
 export function getDomHeight(dom: HTMLElement) {
+  if (!dom) {
+    return map.get('defaultheight')
+  }
+
   const contentStyle =
     window.getComputedStyle(dom) ||
     iframeComputed.contentWindow.getComputedStyle(dom)
@@ -383,7 +387,28 @@ export function buildComputedHtml() {
   clonePageToIframe()
 }
 
+const queuedActions: [(...args: any[]) => any, any, any][] = []
+
+export function addQueuedAction(
+  func: (...args: any[]) => any,
+  args: any[] = [],
+  context = null,
+) {
+  queuedActions.push([func, args, context])
+}
+
+export function runQueuedActions() {
+  queuedActions.forEach(([func, args, context]) => {
+    func.call(context, ...args)
+  })
+}
+
 export function changeComputedHtml() {
+  if (!iframeDoc) {
+    addQueuedAction(changeComputedHtml)
+    return
+  }
+
   getPageOption(true)
   const { page } = useStore()
   const pageSize = () => {
@@ -427,6 +452,7 @@ function clonePageToIframe() {
   filterAndCopyHtmlToIframe(iframe, ['header', 'iframe', 'footer'])
   cleanPagecontent(iframe)
   adddPForProseMirror(iframe)
+  runQueuedActions()
 }
 
 function cleanPagecontent(iframe: any) {

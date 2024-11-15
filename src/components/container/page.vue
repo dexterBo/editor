@@ -2,20 +2,14 @@
   <div class="umo-page-container">
     <container-toc v-if="page.showToc" @close="page.showToc = false" />
     <div class="umo-zoomable-container umo-scrollbar">
-      <div
-        class="umo-zoomable-content"
-        :style="{
-          width: pageZoomWidth,
-          height: pageZoomHeight,
-        }"
-      >
-        <div
-          class="umo-page-content"
-          :style="{
-            width: pageSize.width + 'cm',
-            transform: `scale(${page.zoomLevel ? page.zoomLevel / 100 : 1})`,
-          }"
-        >
+      <div class="umo-zoomable-content" :style="{
+        width: pageZoomWidth,
+        height: pageZoomHeight,
+      }">
+        <div class="umo-page-content" :style="{
+          width: pageSize.width + 'cm',
+          transform: `scale(${page.zoomLevel ? page.zoomLevel / 100 : 1})`,
+        }">
           <editor>
             <template #page_header="props">
               <slot name="page_header" v-bind="props" />
@@ -28,21 +22,13 @@
             </template>
           </editor>
         </div>
-        <container-comments />
+        <!-- <container-comments /> -->
       </div>
     </div>
-    <t-image-viewer
-      v-model:visible="imageViewer.visible"
-      v-model:index="currentImageIndex"
-      :images="previewImages"
-      @close="imageViewer.visible = false"
-    />
-    <t-back-top
-      :container="`${container} .umo-zoomable-container`"
-      :visible-height="800"
-      size="small"
-      :offset="['25px', '30px']"
-    />
+    <t-image-viewer v-model:visible="imageViewer.visible" v-model:index="currentImageIndex" :images="previewImages"
+      @close="imageViewer.visible = false" />
+    <t-back-top :container="`${container} .umo-zoomable-container`" :visible-height="800" size="small"
+      :offset="['25px', '30px']" />
     <container-search-replace />
     <container-print />
   </div>
@@ -137,15 +123,18 @@ watch(
   flex: 1;
   padding: 20px 50px;
   scroll-behavior: smooth;
+
   .umo-zoomable-content {
     margin: 0 auto;
     position: relative;
+
     .umo-page-content {
       transform-origin: 0 0;
       box-sizing: border-box;
       display: flex;
       position: relative;
       overflow: visible !important;
+
       [contenteditable] {
         outline: none;
       }
@@ -155,9 +144,11 @@ watch(
 
 :deep(.umo-back-top) {
   position: absolute;
+
   &:hover {
     opacity: 0.9;
     background-color: var(--umo-color-white) !important;
+
     .umo-back-top__icon {
       color: var(--umo-primary-color);
     }

@@ -1,32 +1,18 @@
 <template>
-  <t-config-provider
-    :global-config="{
-      ...localeConfig[locale],
-      classPrefix: 'umo',
-    }"
-  >
-    <div
-      :id="container.substr(1)"
-      class="umo-editor-container"
-      :class="{
-        'toolbar-classic': isRecord($toolbar) && $toolbar.mode === 'classic',
-        'toolbar-ribbon': isRecord($toolbar) && $toolbar.mode === 'ribbon',
-        'toolbar-source': isRecord($toolbar) && $toolbar.mode === 'source',
-        'preview-mode': page.preview?.enabled,
-        'laser-pointer': page.preview?.enabled && page.preview?.laserPointer,
-      }"
-      :style="{ height: options.height }"
-    >
+  <t-config-provider :global-config="{
+    ...localeConfig[locale],
+    classPrefix: 'umo',
+  }">
+    <div :id="container.substr(1)" class="umo-editor-container" :class="{
+      'toolbar-classic': isRecord($toolbar) && $toolbar.mode === 'classic',
+      'toolbar-ribbon': isRecord($toolbar) && $toolbar.mode === 'ribbon',
+      'toolbar-source': isRecord($toolbar) && $toolbar.mode === 'source',
+      'preview-mode': page.preview?.enabled,
+      'laser-pointer': page.preview?.enabled && page.preview?.laserPointer,
+    }" :style="{ height: options.height }">
       <header class="umo-toolbar">
-        <toolbar
-          :key="toolbarKey"
-          @menu-change="(event: any) => emits('menuChange', event)"
-        >
-          <template
-            v-for="item in options.toolbar?.menus"
-            :key="item"
-            #[`toolbar_${item}`]="slotProps"
-          >
+        <toolbar :key="toolbarKey" @menu-change="(event: any) => emits('menuChange', event)">
+          <template v-for="item in options.toolbar?.menus" :key="item" #[`toolbar_${item}`]="slotProps">
             <slot :name="`toolbar_${item}`" v-bind="slotProps" />
           </template>
         </toolbar>
@@ -237,6 +223,8 @@ watch(
 watch(
   () => page.value.size,
   (pageSize: any, oldPageSize: any) => {
+    if (pageSize === oldPageSize) { return; }
+
     emits('changed:pageSize', { pageSize, oldPageSize })
   },
   { deep: true },
@@ -377,7 +365,8 @@ const setToolbar = (params: { mode: 'classic' | 'ribbon'; show: boolean }) => {
 const setPage = (params: {
   size: string
   orientation: string
-  background: string
+  background: string,
+  margin: Record<'top' | 'right' | 'bottom' | 'left', number>,
 }) => {
   if (!isRecord(params)) {
     throw new Error('params must be an object.')
@@ -413,6 +402,19 @@ const setPage = (params: {
       throw new Error('"params.background" must be a string.')
     }
     page.value.background = params.background
+  }
+
+  if (params?.margin) {
+    if (!isRecord(params.margin)) {
+      throw new Error('"params.margin" must be an object.')
+    }
+
+    page.value.margin = {
+      left: params.margin?.left ?? page.value?.margin?.left,
+      right: params.margin?.right ?? page.value?.margin?.right,
+      top: params.margin?.top ?? page.value?.margin?.top,
+      bottom: params.margin?.bottom ?? page.value?.margin?.bottom,
+    }
   }
 }
 
@@ -833,21 +835,25 @@ defineExpose({
   color: var(--umo-text-color);
   font-family: var(--umo-font-family);
   position: relative !important;
+
   .umo-toolbar,
   .umo-footer {
     background-color: var(--umo-color-white);
   }
+
   .umo-main {
     flex: 1;
     background-color: var(--umo-container-background);
     overflow: hidden;
   }
+
   &.preview-mode {
     &.laser-pointer {
       .umo-main {
         cursor: url('@/assets/images/laser-pointer.svg'), auto;
       }
     }
+
     .umo-toolbar {
       display: none;
     }

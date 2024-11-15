@@ -1,30 +1,21 @@
 <template>
-  <editor-content
-    class="umo-editor-container"
-    :class="{
-      'is-empty': isEmpty,
-      'show-line-number': page.showLineNumber,
-      'format-painter': painter.enabled,
-      'disable-page-break': !page.pagination,
-    }"
-    :editor="editor"
-    :style="{
-      lineHeight: defaultLineHeight,
-      '--umo-editor-placeholder': `'${l(options.document?.placeholder ?? {})}'`,
-    }"
-    :spellcheck="
-      options.document?.enableSpellcheck && $document.enableSpellcheck
-    "
-  />
+  <editor-content class="umo-editor-container" :class="{
+    'is-empty': isEmpty,
+    'show-line-number': page.showLineNumber,
+    'format-painter': painter.enabled,
+    'disable-page-break': !page.pagination,
+  }" :editor="editor" :style="{
+    lineHeight: defaultLineHeight,
+    '--umo-editor-placeholder': `'${l(options.document?.placeholder ?? {})}'`,
+  }" :spellcheck="options.document?.enableSpellcheck && $document.enableSpellcheck
+    " />
   <menus-bubble v-if="editor && !page.preview?.enabled && !editorDestroyed" />
-  <menus-context-block
-    v-if="
-      options.document?.enableBlockMenu &&
-      !page.preview?.enabled &&
-      editor &&
-      !editorDestroyed
-    "
-  />
+  <menus-context-block v-if="
+    options.document?.enableBlockMenu &&
+    !page.preview?.enabled &&
+    editor &&
+    !editorDestroyed
+  " />
 </template>
 
 <script setup lang="ts">
@@ -37,8 +28,16 @@ import Image from '@/extensions/image'
 import Page from '@/extensions/page'
 import { pagePlugin } from '@/extensions/page/page-plugin'
 
-const { options, editor, page, painter, setEditor, editorDestroyed } =
-  useStore()
+const {
+  options,
+  editor,
+  page,
+  painter,
+  setEditor,
+  editorDestroyed,
+  container,
+  tableOfContents,
+} = useStore()
 
 const $document = useState('document')
 
@@ -76,10 +75,11 @@ const editorInstance: Editor = new Editor({
       types: options.value.page.nodesComputedOption?.types ?? [],
       slots: useSlots(),
     }),
-    ...extensions,
+    ...extensions(options.value, container, tableOfContents.value),
     ...(options.value.extensions as Extension[]),
   ],
   onCreate({ editor }) {
+    isReady = true
     isEmpty = editor.commands.setPlaceholder('')
   },
   onUpdate({ editor }) {
